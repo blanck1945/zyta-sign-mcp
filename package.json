@@ -1,0 +1,58 @@
+{
+  "name": "zyta-sign-mcp",
+  "version": "0.4.0",
+  "description": "Servidor MCP para Zyta Sign — documentos, firmas y estudios desde Claude, Cursor o Codex.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blanck1945/zyta-sign-mcp.git"
+  },
+  "homepage": "https://sign.zyta.app",
+  "bugs": {
+    "url": "https://github.com/blanck1945/zyta-sign-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "zyta",
+    "kairo",
+    "esign",
+    "signatures",
+    "cursor",
+    "claude"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "bin": {
+    "zyta-sign-mcp": "dist/server.js"
+  },
+  "main": "dist/server.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "dev": "tsx src/server.ts",
+    "start": "node dist/server.js",
+    "inspect": "npx @modelcontextprotocol/inspector tsx src/server.ts",
+    "smoke:prod": "tsx scripts/smoke-prod.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.0"
+  }
+}
