@@ -100,7 +100,7 @@ export function registerExtraKairoTools(server: McpServer) {
     {
       title: "Revocar firma en documento",
       description:
-        "Revoca una firma ya hecha (deja de contar en QR/certificado). Si hay firmas posteriores en la cadena, también se revocan. Requiere scope 'write'. Indicá signatureId o signerName (ej. Roberto Malaver, Mendoza).",
+        "Revoca una firma (deja de contar en QR/certificado) y reconstruye el PDF manteniendo las demás. Por defecto solo borra la indicada; cascade=true revoca también las posteriores. Requiere scope 'write'.",
       inputSchema: {
         documentId: z.string().min(1),
         signatureId: z
@@ -113,9 +113,13 @@ export function registerExtraKairoTools(server: McpServer) {
           .min(1)
           .optional()
           .describe("Nombre del firmante (parcial ok). Obligatorio si no hay signatureId."),
+        cascade: z
+          .boolean()
+          .optional()
+          .describe("true = revocar también firmas posteriores en la cadena (legacy)."),
       },
     },
-    async ({ documentId, signatureId, signerName }) => {
+    async ({ documentId, signatureId, signerName, cascade }) => {
       try {
         const data = await kairoFetch<unknown>(
           `/api/documents/${encodeURIComponent(documentId)}/signatures/revoke`,
@@ -124,6 +128,7 @@ export function registerExtraKairoTools(server: McpServer) {
             body: {
               ...(signatureId ? { signatureId } : {}),
               ...(signerName ? { signerName } : {}),
+              ...(cascade === true ? { cascade: true } : {}),
             },
           },
         );
