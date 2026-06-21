@@ -69,6 +69,37 @@ export function registerExtraKairoTools(server) {
             return fail(e);
         }
     });
+    registerAuthTool(server, "kairo_revoke_signature", {
+        title: "Revocar firma en documento",
+        description: "Revoca una firma ya hecha (deja de contar en QR/certificado). Si hay firmas posteriores en la cadena, también se revocan. Requiere scope 'write'. Indicá signatureId o signerName (ej. Roberto Malaver, Mendoza).",
+        inputSchema: {
+            documentId: z.string().min(1),
+            signatureId: z
+                .string()
+                .min(1)
+                .optional()
+                .describe("ID de la firma a revocar."),
+            signerName: z
+                .string()
+                .min(1)
+                .optional()
+                .describe("Nombre del firmante (parcial ok). Obligatorio si no hay signatureId."),
+        },
+    }, async ({ documentId, signatureId, signerName }) => {
+        try {
+            const data = await kairoFetch(`/api/documents/${encodeURIComponent(documentId)}/signatures/revoke`, {
+                method: "POST",
+                body: {
+                    ...(signatureId ? { signatureId } : {}),
+                    ...(signerName ? { signerName } : {}),
+                },
+            });
+            return ok(data);
+        }
+        catch (e) {
+            return fail(e);
+        }
+    });
     registerAuthTool(server, "kairo_download_signed_pdf", {
         title: "Descargar PDF firmado",
         description: "Descarga el PDF estampado de una firma. Podés acceder si ves el documento (incluye firmas del estudio).",
